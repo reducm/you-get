@@ -22,6 +22,8 @@ from .util.strings import get_filename, unescape_html
 from . import json_output as json_output_
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf8')
 
+_PAPA = "crawler.subYouGet.src"
+
 SITES = {
     '163'              : 'netease',
     '56'               : 'w56',
@@ -1802,7 +1804,7 @@ def url_to_module(url):
     k = r1(r'([^.]+)', domain)
     if k in SITES:
         return (
-            import_module('.'.join(['you_get', 'extractors', SITES[k]])),
+            import_module('.'.join([_PAPA, 'you_get', 'extractors', SITES[k]])),
             url
         )
     else:
