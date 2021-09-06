@@ -29,9 +29,10 @@ def output(video_extractor, pretty_print=True):
     if extra:
         out["extra"] = extra
     if pretty_print:
-        print(json.dumps(out, indent=4, ensure_ascii=False))
+        return json.dumps(out, indent=4, ensure_ascii=False)
     else:
-        print(json.dumps(out))
+        return json.dumps(out)
+    
 
 # a fake VideoExtractor object to save info
 class VideoExtractor(object):

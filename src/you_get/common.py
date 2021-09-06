@@ -14,6 +14,7 @@ import ssl
 from http import cookiejar
 from importlib import import_module
 from urllib import request, parse, error
+from rich import print,inspect
 
 from .version import __version__
 from .util import log, term
@@ -1344,7 +1345,7 @@ def download_main(download, download_playlist, urls, playlist, **kwargs):
         if playlist:
             download_playlist(url, **kwargs)
         else:
-            download(url, **kwargs)
+            return download(url, **kwargs)
 
 
 def load_cookies(cookiefile):
@@ -1821,12 +1822,12 @@ def url_to_module(url):
 
 def any_download(url, **kwargs):
     m, url = url_to_module(url)
-    m.download(url, **kwargs)
+    return m.download(url, **kwargs)
 
 
 def any_download_playlist(url, **kwargs):
     m, url = url_to_module(url)
-    m.download_playlist(url, **kwargs)
+    return m.download_playlist(url, **kwargs)
 
 
 def main(**kwargs):

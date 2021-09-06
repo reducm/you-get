@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 from .common import match1, maybe_print, download_urls, get_filename, parse_host, set_proxy, unset_proxy, get_content, dry_run, player
-from .common import print_more_compatible as print
+# from .common import print_more_compatible as print
+from rich import print, inspect
 from .util import log
 from . import json_output
 import os
@@ -43,10 +44,14 @@ class VideoExtractor():
         self.url = url
         self.vid = None
 
+        print("kwargs in download_by_url: ", kwargs)
+
         if 'extractor_proxy' in kwargs and kwargs['extractor_proxy']:
             set_proxy(parse_host(kwargs['extractor_proxy']))
         self.prepare(**kwargs)
+        print("after prepare")
         if self.out:
+            print("out!!!!!")
             return
         if 'extractor_proxy' in kwargs and kwargs['extractor_proxy']:
             unset_proxy()
@@ -56,9 +61,17 @@ class VideoExtractor():
         except:
             self.streams_sorted = [dict([('itag', stream_type['itag'])] + list(self.streams[stream_type['itag']].items())) for stream_type in self.__class__.stream_types if stream_type['itag'] in self.streams]
 
+        print("after set sorted:")
+
         self.extract(**kwargs)
 
-        self.download(**kwargs)
+        if 'json_output' in kwargs and kwargs['json_output']:
+            json_str = self.download(**kwargs)
+            print("after json self.download")
+            return json_str
+        else:
+            self.download(**kwargs)
+            return self.streams_sorted
 
     def download_by_vid(self, vid, **kwargs):
         self.url = None
@@ -78,6 +91,8 @@ class VideoExtractor():
         self.extract(**kwargs)
 
         self.download(**kwargs)
+
+        return self.streams_sorted
 
     def prepare(self, **kwargs):
         pass
@@ -178,7 +193,10 @@ class VideoExtractor():
 
     def download(self, **kwargs):
         if 'json_output' in kwargs and kwargs['json_output']:
-            json_output.output(self)
+            jsonstr = json_output.output(self)
+            # print("json in download!!!")
+            # print(jsonstr)
+            return jsonstr
         elif 'info_only' in kwargs and kwargs['info_only']:
             if 'stream_id' in kwargs and kwargs['stream_id']:
                 # Display the stream
