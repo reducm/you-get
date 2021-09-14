@@ -232,7 +232,7 @@ class VideoExtractor():
                 self.p(stream_id)
             else:
                 self.p_i(stream_id)
-
+            
             if stream_id in self.streams:
                 urls = self.streams[stream_id]['src']
                 ext = self.streams[stream_id]['container']
@@ -253,10 +253,18 @@ class VideoExtractor():
                 headers['User-Agent'] = self.ua
             if self.referer is not None:
                 headers['Referer'] = self.referer
-            download_urls(urls, self.title, ext, total_size, headers=headers,
+
+            if 'title' in kwargs and kwargs["title"]:
+                title = kwargs["title"]
+            else:
+                title = self.title
+
+            update_progress = kwargs['update_progress'] if 'update_progress' in kwargs and kwargs['update_progress'] else None
+
+            download_urls(urls, title, ext, total_size, headers=headers,
                           output_dir=kwargs['output_dir'],
                           merge=kwargs['merge'],
-                          av=stream_id in self.dash_streams)
+                          av=stream_id in self.dash_streams, update_progress=update_progress)
 
             if 'caption' not in kwargs or not kwargs['caption']:
                 print('Skipping captions or danmaku.')

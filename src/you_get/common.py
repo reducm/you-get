@@ -680,6 +680,7 @@ def url_save(
                 else:
                     if bar:
                         bar.update_received(file_size)
+                        print("file_size", file_size)
                 return
             else:
                 if not is_part:
@@ -793,7 +794,11 @@ def url_save(
                     received += len(buffer)
                     received_chunk += len(buffer)
                     if bar:
+                        print("--------len:%s---------", len(buffer), kwargs)
                         bar.update_received(len(buffer))
+                        if "update_progress" in kwargs and kwargs["update_progress"]:
+                            print("has_update_progress:", kwargs)
+                            kwargs["update_progress"](bar.percent)
 
     assert received == os.path.getsize(temp_filepath), '%s == %s == %s' % (
         received, os.path.getsize(temp_filepath), temp_filepath
@@ -816,6 +821,7 @@ class SimpleProgressBar:
         self.received = 0
         self.speed = ''
         self.last_updated = time.time()
+        self.percent = 0
 
         total_pieces_len = len(str(total_pieces))
         # 38 is the size of all statically known size in self.bar
@@ -834,6 +840,7 @@ class SimpleProgressBar:
         percent = round(self.received * 100 / self.total_size, 1)
         if percent >= 100:
             percent = 100
+        self.percent = percent
         dots = bar_size * int(percent) // 100
         plus = int(percent) - dots // bar_size * 100
         if plus > 0.8:
@@ -1007,6 +1014,7 @@ def download_urls(
         url = urls[0]
         print('Downloading %s ...' % tr(output_filename))
         bar.update()
+        # !!创建 progress_bar之后，这里是下载入口
         url_save(
             url, output_filepath, bar, refer=refer, faker=faker,
             headers=headers, **kwargs
@@ -1625,6 +1633,8 @@ def script_main(download, download_playlist, **kwargs):
     parser.add_argument('URL', nargs='*', help=argparse.SUPPRESS)
 
     args = parser.parse_args()
+
+    print("----args:----", args)
 
     if args.help:
         print_version()
