@@ -21,7 +21,13 @@ from .util import log, term
 from .util.git import get_version
 from .util.strings import get_filename, unescape_html
 from . import json_output as json_output_
-sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf8')
+import pdb
+
+# sys.stdout = io.TextIOWrapper(sys.stdout.buffer,encoding='utf8')
+
+sys.path.append("/".join([ sys.path[0], "crawler/subYouGet/src/" ]))
+
+print("sys.path", sys.path)
 
 _PAPA = "crawler.subYouGet.src"
 
@@ -399,6 +405,7 @@ def get_location(url, headers=None, get_method='HEAD'):
 
 def urlopen_with_retry(*args, **kwargs):
     retry_time = 3
+
     for i in range(retry_time):
         try:
             if insecure:
@@ -541,7 +548,7 @@ def url_size(url, faker=False, headers={}):
     return int(size) if size is not None else float('inf')
 
 
-def urls_size(urls, faker=False, headers={}):
+def urls_size(urls, faker=False, headers={}, **kwargs):
     return sum([url_size(url, faker=faker, headers=headers) for url in urls])
 
 
@@ -797,7 +804,8 @@ def url_save(
                         print("--------len:%s---------", len(buffer), kwargs)
                         bar.update_received(len(buffer))
                         if "update_progress" in kwargs and kwargs["update_progress"]:
-                            print("has_update_progress:", kwargs)
+                            # print("has_update_progress:", kwargs)
+                            # 这里是用传过来的闭包去发送socket消息
                             kwargs["update_progress"](bar.percent)
 
     assert received == os.path.getsize(temp_filepath), '%s == %s == %s' % (
@@ -1660,6 +1668,8 @@ def script_main(download, download_playlist, **kwargs):
     output_filename = args.output_filename
     extractor_proxy = args.extractor_proxy
 
+    print("extrator_proxy_global: ", extractor_proxy)
+
     info_only = args.info
     if args.force:
         force = True
@@ -1812,10 +1822,12 @@ def url_to_module(url):
     video_host = r1(r'https?://([^/]+)/', url)
     video_url = r1(r'https?://[^/]+(.*)', url)
 
+
+
     k = r1(r'([^.]+)', domain)
     if k in SITES:
         return (
-            import_module('.'.join([_PAPA, 'you_get', 'extractors', SITES[k]])),
+            import_module('.'.join(['you_get', 'extractors', SITES[k]])),
             url
         )
     else:
@@ -1831,7 +1843,9 @@ def url_to_module(url):
 
 
 def any_download(url, **kwargs):
+    print("any download url:", url)
     m, url = url_to_module(url)
+    print("any_download module: ", m)
     return m.download(url, **kwargs)
 
 

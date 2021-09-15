@@ -2,6 +2,7 @@
 
 from ..common import *
 from ..extractor import VideoExtractor
+from rich import print
 
 from xml.dom.minidom import parseString
 
@@ -614,7 +615,12 @@ class YouTube(VideoExtractor):
                 src += '&sig={}'.format(sig)
 
             self.streams[stream_id]['src'] = [src]
-            self.streams[stream_id]['size'] = urls_size(self.streams[stream_id]['src'])
+
+            if 'extractor_proxy' in kwargs and kwargs['extractor_proxy']:
+                print("youtube set proxy:", kwargs['extractor_proxy'])
+                set_proxy(parse_host(kwargs['extractor_proxy']))
+            
+            self.streams[stream_id]['size'] = urls_size(self.streams[stream_id]['src'], **kwargs)
 
 site = YouTube()
 download = site.download_by_url
