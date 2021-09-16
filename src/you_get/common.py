@@ -650,6 +650,7 @@ def url_save(
     url, filepath, bar, refer=None, is_part=False, faker=False,
     headers=None, timeout=None, **kwargs
 ):
+    print("kwargs in common#url_save:", kwargs)
     tmp_headers = headers.copy() if headers is not None else {}
     # When a referer specified with param refer,
     # the key must be 'Referer' for the hack here
@@ -816,6 +817,7 @@ def url_save(
         # on Windows rename could fail if destination filepath exists
         os.remove(filepath)
     os.rename(temp_filepath, filepath)
+
 
 
 class SimpleProgressBar:
@@ -1018,6 +1020,8 @@ def download_urls(
     else:
         bar = PiecesProgressBar(total_size, len(urls))
 
+    print("kwargs in common#download_urls: ", kwargs)
+
     if len(urls) == 1:
         url = urls[0]
         print('Downloading %s ...' % tr(output_filename))
@@ -1028,6 +1032,9 @@ def download_urls(
             headers=headers, **kwargs
         )
         bar.done()
+        if 'update_filepath' in kwargs and kwargs['update_filepath']:
+            kwargs['update_filepath'](output_filepath)
+
     else:
         parts = []
         print('Downloading %s ...' % tr(output_filename))
@@ -1043,6 +1050,12 @@ def download_urls(
                 headers=headers, **kwargs
             )
         bar.done()
+        if 'update_filepath' in kwargs and kwargs['update_filepath']:
+            kwargs['update_filepath'](output_filepath)
+
+
+
+
 
         if not merge:
             print()
@@ -1123,6 +1136,8 @@ def download_urls(
         else:
             print("Can't merge %s files" % ext)
 
+    if 'update_filepath' in kwargs and kwargs['update_filepath']:
+        kwargs['update_filepath'](output_filepath)
     print()
 
 

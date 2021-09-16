@@ -260,11 +260,12 @@ class VideoExtractor():
                 title = self.title
 
             update_progress = kwargs['update_progress'] if 'update_progress' in kwargs and kwargs['update_progress'] else None
+            update_filepath = kwargs['update_filepath'] if 'update_filepath' in kwargs and kwargs['update_filepath'] else None
 
             download_urls(urls, title, ext, total_size, headers=headers,
                           output_dir=kwargs['output_dir'],
                           merge=kwargs['merge'],
-                          av=stream_id in self.dash_streams, update_progress=update_progress)
+                          av=stream_id in self.dash_streams, update_progress=update_progress, update_filepath=update_filepath)
 
             if 'caption' not in kwargs or not kwargs['caption']:
                 print('Skipping captions or danmaku.')
