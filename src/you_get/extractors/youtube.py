@@ -602,6 +602,11 @@ class YouTube(VideoExtractor):
             # Extract stream with the best quality
             stream_id = self.streams_sorted[0]['itag']
 
+        if 'extractor_proxy' in kwargs and kwargs['extractor_proxy']:
+            print("youtube set proxy:", kwargs['extractor_proxy'])
+            set_proxy(parse_host(kwargs['extractor_proxy']))
+ 
+
         if stream_id in self.streams:
             src = self.streams[stream_id]['url']
             if self.streams[stream_id]['sig'] is not None:
@@ -616,10 +621,7 @@ class YouTube(VideoExtractor):
 
             self.streams[stream_id]['src'] = [src]
 
-            if 'extractor_proxy' in kwargs and kwargs['extractor_proxy']:
-                print("youtube set proxy:", kwargs['extractor_proxy'])
-                set_proxy(parse_host(kwargs['extractor_proxy']))
-            
+           
             self.streams[stream_id]['size'] = urls_size(self.streams[stream_id]['src'], **kwargs)
 
 site = YouTube()
