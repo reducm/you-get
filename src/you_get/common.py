@@ -650,7 +650,6 @@ def url_save(
     url, filepath, bar, refer=None, is_part=False, faker=False,
     headers=None, timeout=None, **kwargs
 ):
-    print("kwargs in common#url_save:", kwargs)
     tmp_headers = headers.copy() if headers is not None else {}
     # When a referer specified with param refer,
     # the key must be 'Referer' for the hack here
@@ -802,7 +801,6 @@ def url_save(
                     received += len(buffer)
                     received_chunk += len(buffer)
                     if bar:
-                        print("--------len:%s---------", len(buffer), kwargs)
                         bar.update_received(len(buffer))
                         if "update_progress" in kwargs and kwargs["update_progress"]:
                             # print("has_update_progress:", kwargs)
