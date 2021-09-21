@@ -42,7 +42,8 @@ def print_info(site_info=None, title=None, type=None, size=None):
     global last_info
     # create a VideoExtractor and save info for download_urls()
     ve = VideoExtractor()
-    last_info = ve
+    # 取消保存上一次的info, 会导致进程冲突
+    # last_info = ve
     ve.name = site_info
     ve.title = title
     ve.url = None
