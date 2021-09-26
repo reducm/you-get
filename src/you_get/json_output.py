@@ -39,7 +39,7 @@ class VideoExtractor(object):
     pass
 
 def print_info(site_info=None, title=None, type=None, size=None):
-    global last_info
+    # global last_info
     # create a VideoExtractor and save info for download_urls()
     ve = VideoExtractor()
     # 取消保存上一次的info, 会导致进程冲突
@@ -47,6 +47,7 @@ def print_info(site_info=None, title=None, type=None, size=None):
     ve.name = site_info
     ve.title = title
     ve.url = None
+    print("in json_output#print_info: ve_name: {ve_name}, ve_title: {ve_title}, ve_url: {ve_url}".format(ve_name=ve.name, ve_title=ve.title, ve_url=ve.url))
 
 def download_urls(urls=None, title=None, ext=None, total_size=None, refer=None):
     # ve = last_info
@@ -66,3 +67,4 @@ def download_urls(urls=None, title=None, ext=None, total_size=None, refer=None):
     ve.streams = {}
     ve.streams['__default__'] = stream
     output(ve)
+

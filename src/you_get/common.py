@@ -848,6 +848,7 @@ class SimpleProgressBar:
         percent = round(self.received * 100 / self.total_size, 1)
         if percent >= 100:
             percent = 100
+        # 加了这句外面随时可以获取进度条最新的percent
         self.percent = percent
         dots = bar_size * int(percent) // 100
         plus = int(percent) - dots // bar_size * 100
@@ -862,8 +863,9 @@ class SimpleProgressBar:
             percent, round(self.received / 1048576, 1), bar,
             self.current_piece, self.total_pieces, self.speed
         )
-        sys.stdout.write('\r' + bar)
-        sys.stdout.flush()
+        # 关闭了stdout的打印
+        # sys.stdout.write('\r' + bar)
+        # sys.stdout.flush()
 
     def update_received(self, n):
         self.received += n
@@ -1204,6 +1206,7 @@ def playlist_not_supported(name):
 
 def print_info(site_info, title, type, size, **kwargs):
     if json_output:
+        print("in common#print_info#json_output: ", site_info, title, type, size, kwargs)
         json_output_.print_info(
             site_info=site_info, title=title, type=type, size=size
         )
@@ -1746,6 +1749,7 @@ def script_main(download, download_playlist, **kwargs):
             extra['extractor_proxy'] = extractor_proxy
         if stream_id:
             extra['stream_id'] = stream_id
+        print("in script main, before download_main:", args, download, URLs, info_only, json_output, extra)
         download_main(
             download, download_playlist,
             URLs, args.playlist,

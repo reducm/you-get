@@ -47,7 +47,9 @@ class VideoExtractor():
         print("kwargs in download_by_url: ", kwargs)
 
         if 'extractor_proxy' in kwargs and kwargs['extractor_proxy']:
+            print("extractor class set proxy:", kwargs['extractor_proxy'])
             set_proxy(parse_host(kwargs['extractor_proxy']))
+
         self.prepare(**kwargs)
         print("after prepare")
         if self.out:
@@ -61,8 +63,9 @@ class VideoExtractor():
         except:
             self.streams_sorted = [dict([('itag', stream_type['itag'])] + list(self.streams[stream_type['itag']].items())) for stream_type in self.__class__.stream_types if stream_type['itag'] in self.streams]
 
-        print("after set sorted:")
+        print("after set sorted, stream_sroted:", self.streams_sorted)
 
+        # 多线程是元凶可能在这
         self.extract(**kwargs)
 
         if 'json_output' in kwargs and kwargs['json_output']:

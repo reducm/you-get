@@ -186,6 +186,7 @@ class YouTube(VideoExtractor):
     def prepare(self, **kwargs):
         assert self.url or self.vid
 
+
         if not self.vid and self.url:
             self.vid = self.__class__.get_vid_from_url(self.url)
 
@@ -202,6 +203,9 @@ class YouTube(VideoExtractor):
         #video_info = parse.parse_qs(get_content('https://www.youtube.com/get_video_info?video_id={}&eurl=https%3A%2F%2Fy'.format(self.vid)))
         #logging.debug('STATUS: %s' % video_info['status'][0])
         video_info = {'status': ['ok'], 'use_cipher_signature': 'True'}
+
+        # !!!!
+        print("in youtube prepare: ", self.url, "vid: {vid}".format(vid=self.vid), kwargs)
 
         ytplayer_config = None
         if 'status' not in video_info:
@@ -257,11 +261,17 @@ class YouTube(VideoExtractor):
 
             else:
                 # Parse video page instead
+                # !!!! 写死会走进这里
                 video_page = get_content('https://www.youtube.com/watch?v=%s' % self.vid)
 
                 ytInitialPlayerResponse = json.loads(re.search('ytInitialPlayerResponse\s*=\s*([^\n]+?});', video_page).group(1))
 
                 self.title = ytInitialPlayerResponse["videoDetails"]["title"]
+
+                # 已确认会走这里
+                # print("prepare搜回来的title:", self.title, "bypass age restriction:", ytInitialPlayerResponse)
+                print("prepare搜回来的title:", self.title, "vid:", self.vid)
+
                 if re.search('([^"]*/base\.js)"', video_page):
                     self.html5player = 'https://www.youtube.com' + re.search('([^"]*/base\.js)"', video_page).group(1)
                 else:
@@ -585,8 +595,12 @@ class YouTube(VideoExtractor):
                             'src': [dash_urls, audio_urls],
                             'size': int(dash_size) + int(audio_size)
                         }
+        print("after prepare function streams:", self.streams, "streams_sorted:", self.streams_sorted)
 
     def extract(self, **kwargs):
+        print("kwargs in youtube extract: ", kwargs)
+        # print("streams in youtube extract: ", self.streams)
+
         if not self.streams_sorted:
             # No stream is available
             return
@@ -609,6 +623,7 @@ class YouTube(VideoExtractor):
 
         if stream_id in self.streams:
             src = self.streams[stream_id]['url']
+            print("youtube extract src url:", src)
             if self.streams[stream_id]['sig'] is not None:
                 sig = self.streams[stream_id]['sig']
                 src += '&sig={}'.format(sig)
