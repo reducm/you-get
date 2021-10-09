@@ -595,7 +595,6 @@ class YouTube(VideoExtractor):
                             'src': [dash_urls, audio_urls],
                             'size': int(dash_size) + int(audio_size)
                         }
-        print("after prepare function streams:", self.streams, "streams_sorted:", self.streams_sorted)
 
     def extract(self, **kwargs):
         print("kwargs in youtube extract: ", kwargs)
